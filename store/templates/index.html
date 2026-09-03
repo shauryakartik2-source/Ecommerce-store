@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS - Modern E-Commerce Experience</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-bolt logo-icon"></i>
+                <span>NEXUS<span class="logo-accent">STORE</span></span>
+            </a>
+
+            <div class="search-bar-container">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search gadgets, audio, tech..." onkeyup="handleSearch(event)">
+                <button class="clear-search" id="clearSearchBtn" onclick="clearSearch()" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="nav-actions">
+                <button class="nav-btn" id="ordersBtn" onclick="openOrdersModal()" style="display: none;">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>My Orders</span>
+                </button>
+
+                <button class="nav-btn user-btn" id="authBtn" onclick="openAuthModal()">
+                    <i class="fa-regular fa-user"></i>
+                    <span id="userBtnText">Sign In</span>
+                </button>
+
+                <button class="cart-trigger-btn" onclick="toggleCartDrawer()">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-count-badge" id="cartBadge">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Banner Hero -->
+    <header class="hero-section">
+        <div class="hero-content">
+            <span class="hero-badge"><i class="fa-solid fa-fire"></i> CODEALPHA INTERNSHIP PROJECT</span>
+            <h1>Next-Gen Tech Essentials</h1>
+            <p>Discover premium audio gear, high-performance wearables, and ultra-sleek gadgets engineered for peak performance.</p>
+            <div class="hero-cta-buttons">
+                <button class="btn btn-primary" onclick="scrollToShop()"><i class="fa-solid fa-bag-shopping"></i> Shop Now</button>
+                <button class="btn btn-secondary" onclick="filterCategory('audio')"><i class="fa-solid fa-headphones"></i> Audio Gear</button>
+            </div>
+        </div>
+        <div class="hero-banner-card">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" alt="Hero Product" class="hero-image">
+            <div class="hero-floating-badge">
+                <i class="fa-solid fa-star"></i> 4.9 Rating Premium Noise Cancelling
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Shop Container -->
+    <main class="shop-container" id="shop">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Explore Products</h2>
+                <p class="section-subtitle">Curated collection with live backend persistent storage</p>
+            </div>
+            
+            <!-- Category Filters -->
+            <div class="categories-bar" id="categoriesBar">
+                <button class="category-chip active" data-slug="all" onclick="filterCategory('all')">
+                    <i class="fa-solid fa-layer-group"></i> All
+                </button>
+                <!-- Dynamic categories loaded via JS -->
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="productGrid">
+            <!-- Dynamic product cards populated via JS -->
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Fetching catalog from Django REST API...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="logo">
+                    <i class="fa-solid fa-bolt logo-icon"></i>
+                    <span>NEXUS<span class="logo-accent">STORE</span></span>
+                </div>
+                <p>CodeAlpha Full Stack Development Task 1: Simple E-Commerce Store. Built with Python Django REST Framework & Vanilla JavaScript with Glassmorphism UI.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Technologies Used</h4>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> Python 3 & Django Framework</li>
+                    <li><i class="fa-solid fa-check"></i> SQLite Database & REST APIs</li>
+                    <li><i class="fa-solid fa-check"></i> Vanilla HTML5, CSS3 & JavaScript</li>
+                    <li><i class="fa-solid fa-check"></i> Session & User Auth Persistence</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 CodeAlpha Internship - Full Stack Development. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR DRAWER -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCartDrawer()"></div>
+    <aside class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h3><i class="fa-solid fa-bag-shopping"></i> Shopping Cart</h3>
+            <button class="close-btn" onclick="toggleCartDrawer()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="cart-body" id="cartItemsContainer">
+            <!-- Cart items populated via JS -->
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-summary-row">
+                <span>Subtotal</span>
+                <span id="cartSubtotal">$0.00</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Shipping</span>
+                <span class="free-shipping">FREE</span>
+            </div>
+            <div class="cart-summary-row total-row">
+                <span>Total</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="btn btn-primary checkout-btn" id="checkoutTriggerBtn" onclick="openCheckoutModal()" disabled>
+                <i class="fa-solid fa-lock"></i> Proceed to Checkout
+            </button>
+        </div>
+    </aside>
+
+    <!-- PRODUCT QUICK VIEW MODAL -->
+    <div class="modal" id="productModal">
+        <div class="modal-overlay" onclick="closeModal('productModal')"></div>
+        <div class="modal-content product-modal-content">
+            <button class="modal-close-btn" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-body" id="productModalBody">
+                <!-- Loaded via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-overlay" onclick="closeModal('checkoutModal')"></div>
+        <div class="modal-content checkout-modal-content">
+            <button class="modal-close-btn" onclick="closeModal('checkoutModal')"><i class="fa-solid fa-xmark"></i></button>
+            <div class="checkout-header">
+                <h2><i class="fa-solid fa-credit-card"></i> Order Checkout</h2>
+                <p>Complete your shipping information to process your order.</p>
+            </div>
+            <form id="checkoutForm" onsubmit="handleCheckoutSubmit(event)">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> Full Name</label>
+                    <input type="text" id="chkFullName" placeholder="Shaurya Kartik" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-envelope"></i> Email Address</label>
+                    <input type="email" id="chkEmail" placeholder="shaurya@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-location-dot"></i> Shipping Address</label>
+                    <input type="text" id="chkAddress" placeholder="123 Innovation Drive, Tech Suite 4" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-city"></i> City</label>
+                        <input type="text" id="chkCity" placeholder="New Delhi" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-hashtag"></i> Zip / Postal Code</label>
+                        <input type="text" id="chkZip" placeholder="110001" required>
+                    </div>
+                </div>
+
+                <div class="order-summary-box">
+                    <div class="summary-line">
+                        <span>Items Total:</span>
+                        <strong id="chkSummaryTotal">$0.00</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Delivery Fee:</span>
+                        <span class="free-shipping">FREE (CodeAlpha Promo)</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-check-circle"></i> Place Order Now
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION MODAL (LOGIN / REGISTER) -->
+    <div class="modal" id="authModal">
+        <div class="modal-overlay" onclick="closeModal('authModal')"></div>
+        <div class="modal-content auth-modal-content">
+            <button class="modal-close-btn" onclick="closeModal('authModal')"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">Sign In</button>
+                <button class="auth-tab" id="registerTab" onclick="switchAuthTab('register')">Register Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLoginSubmit(event)">
+                <h3>Welcome Back</h3>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" onsubmit="handleRegisterSubmit(event)" style="display: none;">
+                <h3>Create an Account</h3>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" placeholder="yourname@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Minimum 6 characters" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Register Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ORDERS MODAL -->
+    <div class="modal" id="ordersModal">
+        <div class="modal-overlay" onclick="closeModal('ordersModal')"></div>
+        <div class="modal-content orders-modal-content">
+            <button class="modal-close-btn" onclick="closeModal('ordersModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h2><i class="fa-solid fa-receipt"></i> Your Order History</h2>
+            <p>Track your past orders and their status in real-time.</p>
+            <div id="ordersList" class="orders-list">
+                <!-- Orders populated via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    {% load static %}
+    <script src="{% static 'app.js' %}"></script>
+</body>
+</html>
