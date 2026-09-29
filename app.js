@@ -3,7 +3,15 @@
 // Fully functional with LocalStorage persistence (No backend needed)
 // ========================================================
 
-// Default Data Seed
+// Currency Formatter - Indian Rupees (₹)
+function formatINR(amount) {
+    return '₹' + Number(amount).toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+// Default Data Seed (Indian Rupee Prices)
 const DEFAULT_CATEGORIES = [
     { id: 1, name: 'Audio & Sound', slug: 'audio', icon: 'fa-headphones' },
     { id: 2, name: 'Smart Wearables', slug: 'wearables', icon: 'fa-clock' },
@@ -16,8 +24,8 @@ const DEFAULT_PRODUCTS = [
         id: 1,
         name: 'AeroPulse Wireless Noise-Canceling Headphones',
         description: 'Studio-grade hybrid Active Noise Cancellation, 45-hour playback, lossless spatial audio, and ultra-soft memory foam earcups.',
-        price: 199.99,
-        original_price: 249.99,
+        price: 1999.00,
+        original_price: 2499.00,
         category_name: 'Audio & Sound',
         category_slug: 'audio',
         image_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
@@ -30,8 +38,8 @@ const DEFAULT_PRODUCTS = [
         id: 2,
         name: 'Titanium Apex Pro Smartwatch',
         description: 'Aerospace-grade titanium casing, dual-frequency GPS, ECG monitor, 14-day battery life, and 100m water resistance.',
-        price: 299.99,
-        original_price: 349.99,
+        price: 2999.00,
+        original_price: 3499.00,
         category_name: 'Smart Wearables',
         category_slug: 'wearables',
         image_url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80',
@@ -44,8 +52,8 @@ const DEFAULT_PRODUCTS = [
         id: 3,
         name: 'Mechanical CyberDeck RGB Keyboard',
         description: 'Custom hot-swappable mechanical switches, anodized aluminum chassis, per-key RGB backlighting, and dual wireless mode.',
-        price: 129.50,
-        original_price: 159.99,
+        price: 1299.00,
+        original_price: 1599.00,
         category_name: 'Computing & Tech',
         category_slug: 'tech',
         image_url: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80',
@@ -58,8 +66,8 @@ const DEFAULT_PRODUCTS = [
         id: 4,
         name: 'SonicBass Mini Portable Speaker',
         description: '360-degree immersive sound with dual passive radiators, IP67 dust/waterproof, and integrated carabiner.',
-        price: 59.99,
-        original_price: 79.99,
+        price: 599.00,
+        original_price: 799.00,
         category_name: 'Audio & Sound',
         category_slug: 'audio',
         image_url: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800&auto=format&fit=crop&q=80',
@@ -72,8 +80,8 @@ const DEFAULT_PRODUCTS = [
         id: 5,
         name: 'Quantum Precision Ergonomic Mouse',
         description: '26,000 DPI optical sensor, sub-1ms wireless latency, customizable side buttons, and magnetic scroll wheel.',
-        price: 89.99,
-        original_price: 109.99,
+        price: 899.00,
+        original_price: 1099.00,
         category_name: 'Computing & Tech',
         category_slug: 'tech',
         image_url: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&auto=format&fit=crop&q=80',
@@ -86,8 +94,8 @@ const DEFAULT_PRODUCTS = [
         id: 6,
         name: 'HyperCharge 100W GaN Fast Charger',
         description: 'Multi-port USB-C GaN power adapter capable of charging laptops, phones, and tablets simultaneously at full speed.',
-        price: 49.99,
-        original_price: 65.00,
+        price: 499.00,
+        original_price: 650.00,
         category_name: 'Accessories',
         category_slug: 'accessories',
         image_url: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&auto=format&fit=crop&q=80',
@@ -106,12 +114,23 @@ let currentUser = null;
 
 // Initialize Database in LocalStorage
 function initStorage() {
-    if (!localStorage.getItem('nexus_products')) {
+    const STORAGE_VERSION = 'nexus_v2_inr';
+    const currentVersion = localStorage.getItem('nexus_version');
+
+    if (currentVersion !== STORAGE_VERSION) {
         localStorage.setItem('nexus_products', JSON.stringify(DEFAULT_PRODUCTS));
-    }
-    if (!localStorage.getItem('nexus_categories')) {
         localStorage.setItem('nexus_categories', JSON.stringify(DEFAULT_CATEGORIES));
+        localStorage.removeItem('nexus_cart');
+        localStorage.setItem('nexus_version', STORAGE_VERSION);
+    } else {
+        if (!localStorage.getItem('nexus_products')) {
+            localStorage.setItem('nexus_products', JSON.stringify(DEFAULT_PRODUCTS));
+        }
+        if (!localStorage.getItem('nexus_categories')) {
+            localStorage.setItem('nexus_categories', JSON.stringify(DEFAULT_CATEGORIES));
+        }
     }
+
     if (!localStorage.getItem('nexus_users')) {
         localStorage.setItem('nexus_users', JSON.stringify([]));
     }
@@ -237,8 +256,8 @@ function loadProducts() {
                     </div>
                     <h3 class="product-title">${p.name}</h3>
                     <div class="product-price-row">
-                        <span class="current-price">$${p.price.toFixed(2)}</span>
-                        ${p.original_price ? `<span class="old-price">$${p.original_price.toFixed(2)}</span>` : ''}
+                        <span class="current-price">${formatINR(p.price)}</span>
+                        ${p.original_price ? `<span class="old-price">${formatINR(p.original_price)}</span>` : ''}
                     </div>
                     <div class="product-actions">
                         <button class="add-cart-btn" onclick="addToCart(${p.id})">
@@ -311,8 +330,8 @@ function loadCart() {
                 <p>Add some sleek tech products to get started!</p>
             </div>
         `;
-        document.getElementById('cartSubtotal').innerText = '$0.00';
-        document.getElementById('cartTotal').innerText = '$0.00';
+        document.getElementById('cartSubtotal').innerText = '₹0.00';
+        document.getElementById('cartTotal').innerText = '₹0.00';
         if (checkoutBtn) checkoutBtn.disabled = true;
         return;
     }
@@ -326,7 +345,7 @@ function loadCart() {
             <img src="${item.image_url}" alt="${item.name}">
             <div class="cart-item-info">
                 <h4>${item.name}</h4>
-                <span class="cart-item-price">$${item.price.toFixed(2)}</span>
+                <span class="cart-item-price">${formatINR(item.price)}</span>
             </div>
             <div class="qty-controls">
                 <button class="qty-btn" onclick="updateCartQty(${item.id}, ${item.quantity - 1})">-</button>
@@ -336,8 +355,8 @@ function loadCart() {
         </div>
     `).join('');
 
-    document.getElementById('cartSubtotal').innerText = `$${total.toFixed(2)}`;
-    document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('cartSubtotal').innerText = formatINR(total);
+    document.getElementById('cartTotal').innerText = formatINR(total);
 }
 
 function addToCart(productId) {
@@ -420,7 +439,7 @@ function openProductModal(productId) {
                 </div>
                 <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">${p.description}</p>
                 <div style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 1.5rem;">
-                    $${p.price.toFixed(2)}
+                    ${formatINR(p.price)}
                 </div>
                 <button class="btn btn-primary btn-block" onclick="addToCart(${p.id}); closeModal('productModal');">
                     <i class="fa-solid fa-cart-plus"></i> Add to Cart Now
@@ -618,13 +637,13 @@ function openOrdersModal() {
                 ${o.items.map(item => `
                     <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
                         <span>${item.quantity}x ${item.product_name}</span>
-                        <span style="color: var(--primary);">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <span style="color: var(--primary);">${formatINR(item.price * item.quantity)}</span>
                     </div>
                 `).join('')}
             </div>
             <div style="margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; font-weight: bold;">
                 <span>Total Amount:</span>
-                <span>$${o.total_amount.toFixed(2)}</span>
+                <span>${formatINR(o.total_amount)}</span>
             </div>
         </div>
     `).join('');
