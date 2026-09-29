@@ -427,18 +427,18 @@ function openProductModal(productId) {
     if (!p) return;
 
     modalBody.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
-            <div style="border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color);">
-                <img src="${p.image_url}" alt="${p.name}" style="width: 100%; height: 320px; object-fit: cover;">
+        <div class="product-modal-grid">
+            <div class="product-modal-image-wrap">
+                <img src="${p.image_url}" alt="${p.name}" class="product-modal-image">
             </div>
-            <div>
-                <span class="product-tag" style="position: static; display: inline-block; margin-bottom: 0.8rem;">${p.category_name}</span>
-                <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">${p.name}</h2>
-                <div class="product-rating" style="margin-bottom: 1rem;">
+            <div class="product-modal-details">
+                <span class="product-tag product-modal-tag">${p.category_name}</span>
+                <h2 class="product-modal-title">${p.name}</h2>
+                <div class="product-rating product-modal-rating">
                     <i class="fa-solid fa-star"></i> <strong>${p.rating}</strong> <span>(${p.reviews_count} reviews)</span>
                 </div>
-                <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">${p.description}</p>
-                <div style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 1.5rem;">
+                <p class="product-modal-desc">${p.description}</p>
+                <div class="product-modal-price">
                     ${formatINR(p.price)}
                 </div>
                 <button class="btn btn-primary btn-block" onclick="addToCart(${p.id}); closeModal('productModal');">
