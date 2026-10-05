@@ -3,7 +3,7 @@ import html
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether, HRFlowable, Image
 )
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfgen import canvas
@@ -189,23 +189,12 @@ def build_pdf():
     story.append(Paragraph("CodeAlpha", style_univ_sub))
     story.append(Spacer(1, 30))
 
-    # RIT Logo Representation
-    d = Drawing(160, 48)
-    # Circle emblem
-    d.add(Circle(24, 24, 20, fillColor=colors.HexColor("#1e3a8a"), strokeColor=colors.HexColor("#f59e0b"), strokeWidth=2))
-    d.add(String(14, 18, "RIT", fontName="Helvetica-Bold", fontSize=11, fillColor=colors.white))
-    # RIT text
-    d.add(String(52, 26, "RIT", fontName="Helvetica-Bold", fontSize=22, fillColor=colors.HexColor("#1e3a8a")))
-    d.add(String(52, 10, "ROORKEE", fontName="Helvetica-Bold", fontSize=9, fillColor=colors.HexColor("#1e3a8a")))
-    # NAAC A++ Badge
-    d.add(Rect(108, 16, 45, 20, rx=3, ry=3, fillColor=colors.HexColor("#dc2626"), strokeColor=None))
-    d.add(String(113, 21, "A++", fontName="Helvetica-Bold", fontSize=13, fillColor=colors.white))
-    d.add(String(108, 6, "NAAC GRADE", fontName="Helvetica-Bold", fontSize=6.5, fillColor=colors.HexColor("#dc2626")))
-    
-    t_logo = Table([[d]], colWidths=[160])
+    # Official RIT Logo Image
+    img_logo = Image('rit_logo.jpg', width=210, height=54.6)
+    t_logo = Table([[img_logo]], colWidths=[485])
     t_logo.setStyle(TableStyle([('ALIGN', (0,0), (-1,-1), 'CENTER')]))
     story.append(t_logo)
-    story.append(Spacer(1, 35))
+    story.append(Spacer(1, 30))
 
     story.append(Paragraph("<b>DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING</b>", style_univ_header))
     story.append(Spacer(1, 2))
